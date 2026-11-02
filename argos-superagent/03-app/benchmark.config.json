@@ -1,0 +1,21 @@
+{
+  "name": "ARGOS-4 synthetic scheduling benchmark",
+  "tasks": 28,
+  "noise": 240,
+  "followups": 8,
+  "speculative": 4,
+  "effortMin": 6,
+  "effortMax": 11,
+  "interruptCost": 2,
+  "tokensPerCard": 640,
+  "cardsPerDecision": 3,
+  "sessionsAlive": 4,
+  "baselineSessionsAlive": 1,
+  "maxWorkers": 4,
+  "maxTicks": 300,
+  "mode": "auto",
+  "noisePerTick": 3,
+  "noiseUntilTick": 80,
+  "wordsPerBaselineMessage": 45,
+  "caveat": "Synthetic workload, simulated tools, deterministic reasoning. Measures scheduling, not model quality."
+}

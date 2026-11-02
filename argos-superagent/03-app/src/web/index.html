@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARGOS-4 Super-agent Observatory</title>
+<style>
+  :root {
+    --bg:#0b1020; --panel:#131a30; --panel2:#0f1629; --line:#263353; --text:#eaf0ff; --muted:#9aa8c7;
+    --blue:#4aa8ff; --green:#28d19b; --amber:#ffb84d; --red:#ff6b6b; --grey:#6b7899; --purple:#9b8cff;
+    --chip:#1b2542; --focus:#ffd166;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  a { color:var(--blue); }
+  button, select, input, textarea { font:inherit; color:var(--text); background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:6px 9px; }
+  button { cursor:pointer; }
+  button:hover { border-color:var(--blue); }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+  button.primary { background:#1c3a63; border-color:var(--blue); }
+  button.warn { background:#4a3212; border-color:var(--amber); }
+  button.danger { background:#4a1f26; border-color:var(--red); }
+  button.ghost { background:transparent; }
+  .badge { display:inline-flex; align-items:center; gap:5px; padding:2px 7px; border-radius:999px; border:1px solid var(--line); background:var(--chip); font-size:11px; letter-spacing:.02em; white-space:nowrap; }
+  .badge.synthetic { color:var(--amber); border-color:#6b4d1c; }
+  .badge.adapter { color:var(--purple); border-color:#4b3f7a; }
+  .badge.live { color:var(--green); border-color:#1c5b47; }
+  .dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .dot.blue{background:var(--blue)} .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.grey{background:var(--grey)} .dot.purple{background:var(--purple)}
+  header { position:sticky; top:0; z-index:20; background:rgba(11,16,32,.96); backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:10px 14px; }
+  .topline { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .brand { font-weight:700; font-size:17px; letter-spacing:.06em; margin-right:6px; }
+  .controls { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-left:auto; }
+  .statusline { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-top:8px; font-size:12px; color:var(--muted); }
+  .meter { width:150px; height:8px; border-radius:99px; background:#1d2742; overflow:hidden; border:1px solid var(--line); }
+  .meter > i { display:block; height:100%; background:linear-gradient(90deg,var(--green),var(--amber)); }
+  main { display:grid; grid-template-columns:minmax(260px,1fr) minmax(420px,1.6fr) minmax(300px,1.1fr); gap:12px; padding:12px; align-items:start; }
+  @media (max-width:1150px) { main { grid-template-columns:1fr; } }
+  .col { display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:11px; min-width:0; }
+  .panel h2 { margin:0 0 9px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .panel h3 { margin:12px 0 6px; font-size:12px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+  .question { font-size:15px; font-weight:650; margin:-3px 0 10px; }
+  .hint { color:var(--muted); font-size:11px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .row.tight { gap:5px; }
+  .grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+  .metric { background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:7px 8px; min-width:0; }
+  .metric b { display:block; font-size:18px; line-height:1.15; font-variant-numeric:tabular-nums; }
+  .metric span { color:var(--muted); font-size:10.5px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip { display:inline-block; padding:2px 7px; border-radius:999px; font-size:11px; border:1px solid var(--line); background:var(--chip); }
+  .chip.blue{color:var(--blue);border-color:#254d78} .chip.green{color:var(--green);border-color:#1c5b47}
+  .chip.amber{color:var(--amber);border-color:#6b4d1c} .chip.red{color:var(--red);border-color:#6b2b31}
+  .chip.grey{color:var(--muted);border-color:#33405f} .chip.purple{color:var(--purple);border-color:#4b3f7a}
+  .list { display:flex; flex-direction:column; gap:6px; max-height:340px; overflow:auto; }
+  .item { background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--grey); border-radius:8px; padding:7px 8px; font-size:12px; }
+  .item.blue{border-left-color:var(--blue)} .item.green{border-left-color:var(--green)} .item.amber{border-left-color:var(--amber)} .item.red{border-left-color:var(--red)} .item.purple{border-left-color:var(--purple)} .item.grey{border-left-color:var(--grey)}
+  .item .meta { color:var(--muted); font-size:10.5px; margin-top:3px; word-break:break-word; }
+  .item .title { font-weight:600; word-break:break-word; }
+  .scroll { max-height:330px; overflow:auto; }
+  .tabs { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+  .tabs button { padding:3px 8px; font-size:11px; }
+  .tabs button.active { border-color:var(--blue); background:#1c3a63; }
+  .event { display:grid; grid-template-columns:52px 46px 1fr; gap:7px; padding:5px 6px; border-bottom:1px solid #1c2745; font-size:11.5px; }
+  .event .seq, .event .tk { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .event .body { min-width:0; }
+  .event .label { font-weight:600; word-break:break-word; }
+  .event .why { color:var(--muted); font-size:10.5px; word-break:break-word; }
+  .board-group { margin-bottom:9px; }
+  .board-group h4 { margin:0 0 5px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+  .ticket { background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:7px; margin-bottom:5px; cursor:pointer; }
+  .ticket:hover { border-color:var(--blue); }
+  .ticket.selected { border-color:var(--focus); box-shadow:0 0 0 1px var(--focus) inset; }
+  .ticket .id { font:11px ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--muted); }
+  .ticket .name { font-weight:600; font-size:12px; }
+  .slot { display:flex; gap:6px; align-items:center; background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:6px; font-size:11px; }
+  .slot .bar { flex:1; height:7px; background:#1d2742; border-radius:99px; overflow:hidden; }
+  .slot .bar i { display:block; height:100%; background:var(--blue); }
+  pre { background:#080d1a; border:1px solid var(--line); border-radius:8px; padding:9px; overflow:auto; max-height:260px; font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; word-break:break-word; }
+  svg { width:100%; height:auto; display:block; background:var(--panel2); border:1px solid var(--line); border-radius:9px; }
+  .recall-node { cursor:pointer; }
+  .recall-node circle { fill:#1c2b4d; stroke:var(--blue); stroke-width:1.5; }
+  .recall-node text { fill:var(--text); font-size:10px; }
+  .recall-node:hover circle { fill:#274a7d; }
+  .barrow { display:grid; grid-template-columns:110px 1fr 60px; gap:6px; align-items:center; font-size:11px; margin:4px 0; }
+  .barrow .track { height:12px; background:#1d2742; border-radius:4px; overflow:hidden; }
+  .barrow .track i { display:block; height:100%; background:var(--blue); }
+  .barrow.baseline .track i { background:var(--grey); }
+  .assert { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+  .quiet { color:var(--muted); font-size:11px; }
+  .formrow { display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center; margin:5px 0; font-size:11px; }
+  .formrow label { color:var(--muted); }
+  .formrow input, .formrow select, .formrow textarea { width:100%; }
+  .collapse-note { color:var(--green); font-size:12px; padding:6px 0; }
+  .footnote { color:var(--muted); font-size:10.5px; margin-top:8px; line-height:1.5; }
+  .toast { position:fixed; right:14px; bottom:14px; max-width:340px; background:#13233f; border:1px solid var(--blue); border-radius:10px; padding:9px 11px; font-size:12px; z-index:50; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .hidden { display:none !important; }
+  [aria-live] { outline:none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="topline">
+    <span class="brand">ARGOS-4</span>
+    <span class="badge live"><span class="dot green"></span> LIVE</span>
+    <span class="badge synthetic">SYNTHETIC DEMO DATA</span>
+    <span class="badge adapter">deterministic constitution</span>
+    <label class="hint" for="mission">Mission</label>
+    <select id="mission" aria-label="Mission domain selector"><option value="all">All four missions</option></select>
+    <span class="badge" id="tickBadge">tick 0000</span>
+    <span class="badge" id="modeBadge">mode observe</span>
+    <span class="badge" id="policyBadge">policy —</span>
+    <div class="controls">
+      <label class="hint" for="speed">Speed</label>
+      <select id="speed" aria-label="Simulation speed">
+        <option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option>
+      </select>
+      <button id="pauseBtn" aria-label="Pause simulation">Pause</button>
+      <button id="resetBtn" aria-label="Reset simulation">Reset</button>
+      <button id="replayBtn" aria-label="Replay from event log">Replay</button>
+      <button id="runEndBtn" aria-label="Run to end">Run to end</button>
+      <button id="benchBtn" class="primary" aria-label="Run benchmark">Run benchmark</button>
+    </div>
+  </div>
+  <div class="statusline">
+    <span>Attention <span class="meter" title="messages + words/100 + 5×approvals; lower is better"><i id="attentionBar" style="width:0%"></i></span> <b id="attentionVal">0</b> cost · <span id="attentionPer">0</span>/result</span>
+    <span>Quiet work <b id="quietVal">0</b></span>
+    <span>Watchdog <b id="wdVal">0</b></span>
+    <span>Policy <span id="policyShort">—</span></span>
+    <span id="missionCoverage" class="badge">All four missions</span>
+    <span>Simulation ticks, not wall-clock time. No external network calls.</span>
+  </div>
+</header>
+
+<main>
+  <!-- QUESTION 1 -->
+  <section class="col" aria-labelledby="q1">
+    <div class="panel" aria-live="polite">
+      <h2>1 · Does anything need me now?</h2>
+      <div class="question" id="q1">Needs me now</div>
+      <div id="needsMe" class="list"></div>
+    </div>
+    <div class="panel">
+      <h2>Policy &amp; control</h2>
+      <div class="formrow"><label for="modeSel">Mode</label>
+        <select id="modeSel" aria-label="Policy mode">
+          <option value="off">off — admit nothing proactive</option>
+          <option value="observe" selected>observe — would-accept ledger</option>
+          <option value="auto">auto — matched-rule work only</option>
+        </select>
+      </div>
+      <div class="row tight" style="margin:7px 0">
+        <button id="specBtn" class="ghost">Speculation: on</button>
+        <button id="policyBtn" class="warn">Bump policy → v3</button>
+        <button id="stallBtn" class="ghost" title="Demo-only: delays a worker so the Watchdog escalates">Inject stall (simulation)</button>
+      </div>
+      <h3>Inject event <span class="badge synthetic">simulation</span></h3>
+      <div class="formrow"><label for="injDomain">Domain</label><select id="injDomain"></select></div>
+      <div class="formrow"><label for="injText">Text</label><input id="injText" value="@argos verify the pinned claim against the dataset" aria-label="Injected trigger text"></div>
+      <div class="formrow"><label for="injMeta">Meta JSON</label><textarea id="injMeta" rows="2">{"claimId":"42","claimedEffect":0.12,"dataset":"v2"}</textarea></div>
+      <div class="formrow"><label for="injEffort">Effort ticks</label><input id="injEffort" type="number" min="1" max="30" value="6"></div>
+      <div class="row tight">
+        <label class="hint"><input id="injSpec" type="checkbox"> speculative</label>
+        <label class="hint"><input id="injMention" type="checkbox" checked> addressed to @argos</label>
+        <button id="injectBtn" class="primary">Inject through real gate</button>
+      </div>
+      <div class="footnote">Trigger text is data, never authority. Unlisted actors and injected instructions are rejected before a Trigger exists.</div>
+    </div>
+    <div class="panel">
+      <h2>Quiet work <span class="chip grey">zero messages</span></h2>
+      <div id="quietWork"></div>
+    </div>
+    <div class="panel">
+      <h2>Checklists</h2>
+      <div id="checklists" class="scroll"></div>
+    </div>
+  </section>
+
+  <!-- QUESTION 2 -->
+  <section class="col" aria-labelledby="q2">
+    <div class="panel">
+      <h2>2 · Is it healthy and doing the right things?</h2>
+      <div class="question" id="q2">Health &amp; history</div>
+      <div id="metrics" class="grid3"></div>
+      <div class="footnote">Every metric has its formula in a tooltip. Cache-read tokens are deliberately higher for the proactive architecture — parallelism is not free.</div>
+    </div>
+    <div class="panel">
+      <h2>Event stream <span class="badge" id="eventCount">0 events</span></h2>
+      <div class="tabs" id="eventTabs" role="tablist" aria-label="Event stream filters"></div>
+      <div id="events" class="scroll" aria-live="polite"></div>
+    </div>
+    <div class="panel">
+      <h2>Chain of Recall <span class="badge adapter">Inline &amp; Spill</span></h2>
+      <div class="row tight" style="margin-bottom:7px">
+        <button id="recallTrigger" class="ghost">From first Trigger</button>
+        <button id="recallTicket" class="ghost">From selected Ticket</button>
+        <span class="hint" id="recallRoot">No root selected</span>
+      </div>
+      <svg id="recallSvg" viewBox="0 0 660 250" role="img" aria-label="Reference graph"></svg>
+      <div class="footnote">Click a node to expand its references. Full text stays in spilled artifacts; cards are compact previews.</div>
+    </div>
+    <div class="panel">
+      <h2>Benchmark <span class="badge synthetic">synthetic scheduling</span></h2>
+      <div id="benchmark"></div>
+    </div>
+  </section>
+
+  <!-- QUESTION 3 -->
+  <section class="col" aria-labelledby="q3">
+    <div class="panel">
+      <h2>3 · What is the history of one piece of work?</h2>
+      <div class="question" id="q3">Tickets &amp; workers</div>
+      <div id="board"></div>
+      <div id="ticketDetail"></div>
+    </div>
+    <div class="panel">
+      <h2>Worker slots <span class="badge" id="workerCount">0 / 4</span></h2>
+      <div id="workers" class="list"></div>
+    </div>
+    <div class="panel">
+      <h2>Outbox receipts <span class="chip green">router-only</span></h2>
+      <div id="outbox" class="list"></div>
+    </div>
+    <div class="panel">
+      <h2>Artifact viewer</h2>
+      <div id="artifactButtons" class="row tight"></div>
+      <pre id="artifactContent">Select a Ticket, then an evidence file. All files are written under data/work and are synthetic.</pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const short = s => String(s || '').slice(0, 10);
+  const num = n => Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  let snapshot = null, events = [], lastSeq = 0, selectedDomain = 'all', selectedTicket = null,
+      eventFilter = 'all', recallRoot = null, benchmark = null, checklists = null, speed = 1, allMissions = [];
+
+  const FILTERS = [
+    ['all','All'],['triggers','Triggers'],['eval','Eval'],['fast','Fast path'],
+    ['worker','Worker'],['outbox','Outbox'],['watchdog','Watchdog'],['tickets','Tickets']
+  ];
+  const VOCAB = {
+    'filtered': 'Filtered — outside scope',
+    'fast_path': 'Follow-up delivered to existing Ticket (no Router decision)',
+    'would_accept': 'Would accept (observe mode — no work started)',
+    'speculative_discarded': 'Quiet work discarded — nobody was interrupted',
+    'person/answer': 'Waiting for your decision',
+    'unavailable': 'Assessment could not finish',
+    'dropped': 'Reply dropped: conversation gone'
+  };
+  const LABELS = {
+    'source.rejected': VOCAB.filtered,
+    'subscription.pass_through': 'Follow-up delivered to existing Ticket (no Router decision)',
+    'eval.would_accept': VOCAB.would_accept,
+    'speculation.discarded': VOCAB.speculative_discarded,
+    'ticket.blocked': VOCAB['person/answer'],
+    'message.dropped': VOCAB.dropped,
+    'eval.ignored': 'Ignored quietly — no settled request',
+    'unavailable': VOCAB.unavailable,
+    'trigger.received': 'Trigger admitted by the code gate',
+    'trigger.admitted': 'Trigger assessed for admission',
+    'ticket.created': 'Ticket created with immutable Mandate',
+    'ticket.assigned': 'Worker assigned (durable effect)',
+    'worker.completed': 'Worker finished with evidence artifacts',
+    'result.sent': 'Result delivered to the subscribed Thread',
+    'message.sent': 'Outbox receipt sent',
+    'policy.changed': 'Policy version changed — Mandates revalidated',
+    'ticket.invalidated': 'Ticket invalidated — Mandate withdrawn',
+    'mandate.approved': 'Human approval recorded',
+    'speculation.promoted': 'Quiet work promoted — deliverable evidence',
+    'speculation.throttled': 'Speculation budget reached — silently skipped',
+    'watchdog.flag': 'External Watchdog finding',
+    'policy.violation': 'Untrusted instruction blocked before Trigger',
+    'ticket.ended': 'Ticket ended by a human stop',
+    'control': 'Human control recorded',
+    'effect.enqueued': 'Durable effect enqueued',
+    'effect.done': 'Durable effect completed',
+    'system.started': 'Simulation started'
+  };
+  function friendly(e) {
+    if (e.type === 'source.rejected' && (e.payload.reasonCodes || []).includes('untrusted_content_ignored')) return 'Untrusted instruction text blocked — text is data';
+    const internal = e.payload?.outcome || e.payload?.state || e.payload?.stage || e.type;
+    if (VOCAB[internal]) return VOCAB[internal];
+    if (e.type === 'eval.recorded' && e.payload.outcome === 'fast_path') return LABELS['subscription.pass_through'];
+    if (e.type === 'eval.recorded' && e.payload.outcome === 'would_accept') return LABELS['eval.would_accept'];
+    return LABELS[e.type] || VOCAB[e.type] || e.type.replace(/\./g, ' · ').replace(/_/g, ' ');
+  }
+  function colorOf(e) {
+    const t = e.type;
+    if (t.includes('watchdog') || t.includes('violation') || t.includes('failed') || t.includes('invalidated')) return 'red';
+    if (t.includes('approved') || t.includes('blocked') || t.includes('attention')) return 'amber';
+    if (t.includes('result') || t.includes('promoted') || t.includes('sent')) return 'green';
+    if (t.includes('speculation') || t.includes('would_accept')) return 'purple';
+    if (t.includes('trigger') || t.includes('eval') || t.includes('ticket') || t.includes('effect')) return 'blue';
+    return 'grey';
+  }
+  function domainOf(e) {
+    if (e.payload && e.payload.domain) return e.payload.domain;
+    const tid = e.payload && (e.payload.ticketId || e.payload.ticket);
+    if (tid && snapshot) {
+      const t = snapshot.tickets.find(x => x.id === tid);
+      if (t) return t.domain;
+    }
+    const rid = (e.refs || []).find(r => r && r.startsWith('trigger:'));
+    if (rid && snapshot) {
+      const ev = snapshot.events.find(x => (x.refs || []).includes(rid));
+      if (ev && ev.payload.domain) return ev.payload.domain;
+    }
+    return null;
+  }
+  function matchesDomain(e) {
+    if (selectedDomain === 'all') return true;
+    return domainOf(e) === selectedDomain || (e.payload && e.payload.packs && e.payload.packs.includes(selectedDomain));
+  }
+  function matchesFilter(e) {
+    const t = e.type;
+    if (eventFilter === 'all') return true;
+    if (eventFilter === 'triggers') return t.startsWith('trigger.') || t === 'source.rejected';
+    if (eventFilter === 'eval') return t.startsWith('eval.');
+    if (eventFilter === 'fast') return t.includes('pass_through') || t === 'subscription.pass_through';
+    if (eventFilter === 'worker') return t.startsWith('worker.') || t.startsWith('effect.');
+    if (eventFilter === 'outbox') return t.startsWith('outbox.') || t.startsWith('message.') || t.startsWith('result.');
+    if (eventFilter === 'watchdog') return t.startsWith('watchdog.') || t === 'policy.violation' || t === 'policy.changed';
+    if (eventFilter === 'tickets') return t.startsWith('ticket.') || t.startsWith('mandate.') || t.startsWith('speculation.');
+    return true;
+  }
+  function toast(msg) {
+    const el = $('toast'); el.textContent = msg; el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 3200);
+  }
+  async function api(path, opts) {
+    const res = await fetch(path, opts);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  }
+  async function control(action, extra = {}) {
+    try {
+      const out = await api('/api/control', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ action, ...extra }) });
+      if (out.benchmark) { benchmark = out.benchmark; renderBenchmark(); }
+      snapshot = out.snapshot; render();
+      if (out.result && out.result.ok === false) toast('Control rejected: ' + (out.result.reason || 'not applicable'));
+      return out;
+    } catch (e) { toast('Control failed: ' + e.message); }
+  }
+
+  function renderHeader() {
+    if (!snapshot) return;
+    const m = snapshot.metrics;
+    $('tickBadge').textContent = `tick ${String(snapshot.tick).padStart(4,'0')}`;
+    $('modeBadge').textContent = `mode ${snapshot.mode}`;
+    $('policyBadge').textContent = `policy ${snapshot.policyVersion}`;
+    $('policyShort').textContent = `${snapshot.policyVersion} (${snapshot.revision})`;
+    $('attentionVal').textContent = num(m.attentionCost);
+    $('attentionPer').textContent = num(m.attentionPerUsefulResult);
+    $('attentionBar').style.width = Math.min(100, m.attentionCost / 2) + '%';
+    $('quietVal').textContent = num(m.silenceSavings + m.speculativeDiscarded);
+    $('wdVal').textContent = num(snapshot.watchdogFlags.length);
+    $('pauseBtn').textContent = snapshot.paused ? 'Resume' : 'Pause';
+    $('modeSel').value = snapshot.mode;
+    $('specBtn').textContent = 'Speculation: ' + (snapshot.config.speculationEnabled ? 'on' : 'off');
+    const missions = allMissions.length ? allMissions : (snapshot.packs || []);
+    $('missionCoverage').textContent = missions.length === 4
+      ? `All four missions: ${missions.map(x => x.short || x.name).join(' · ')}`
+      : `${missions.length} mission${missions.length === 1 ? '' : 's'} loaded`;
+  }
+
+  function metricCard(label, value, formula, color='') {
+    return `<div class="metric" title="${esc(formula)}"><b class="${color}">${esc(value)}</b><span>${esc(label)}</span></div>`;
+  }
+  function renderMetrics() {
+    if (!snapshot) return;
+    const m = snapshot.metrics;
+    $('metrics').innerHTML = [
+      metricCard('triggers ingested', num(m.triggersIngested), 'Count of Trigger.received events after the code gate.'),
+      metricCard('tickets created', num(m.ticketsCreated), 'Explicit requests + admitted speculative signals.'),
+      metricCard('messages sent', num(m.messagesSent), 'Outbox receipts with status=sent; every message costs human attention.'),
+      metricCard('words sent', num(m.wordsSent), 'Sum of receipt word counts; chat replies are capped at 100 words.'),
+      metricCard('messages / trigger', num(m.messagesPerTrigger), 'messagesSent ÷ triggersIngested; target ≤ 0.25.'),
+      metricCard('attention / result', num(m.attentionPerUsefulResult), 'messagesSent ÷ resultsDelivered; lower is better.'),
+      metricCard('would accept (observe)', num(m.wouldAccept), 'Inferred requests the constitution would accept if auto were enabled; no work starts.'),
+      metricCard('Router decisions avoided', num(m.routerDecisionsAvoided), 'Subscription pass-throughs that skipped a fresh Eval.'),
+      metricCard('cache-read tokens est.', num(m.cacheReadTokensEst), 'Σ triggers × tokensPerCard × cardsPerDecision × sessionsAlive; parallelism cost.'),
+      metricCard('evidence files', num(m.evidenceFiles), 'Artifact files written by workers under data/work.'),
+      metricCard('p50 / p95 completion', `${num(m.p50Completion)} / ${num(m.p95Completion)}`, 'Percentiles of ticks from Ticket creation to result.sent.'),
+      metricCard('policy violations', num(m.policyViolations), 'Invariant breaches observed by the Watchdog; must remain 0.'),
+      metricCard('performance budgets', snapshot.performance?.allPass ? 'PASS' : 'CHECK',
+        `engine ${snapshot.performance?.budgets?.engineTickMs ?? '—'} ms/tick (${snapshot.performance?.budgets?.engineTickMsPer1kEvents ?? '—'} ms/1k events) · poll ${snapshot.performance?.budgets?.pollPayloadBytes ?? '—'} bytes · worker ${snapshot.performance?.budgets?.workerWallMs ?? '—'} ms · benchmark ${snapshot.performance?.budgets?.benchmarkMs ?? '—'} ms; limits 5 ms / 250 KB / 2 s / 1 s.`)
+    ].join('');
+  }
+
+  function renderNeedsMe() {
+    if (!snapshot) return;
+    const approvals = snapshot.tickets.filter(t => t.phase || t.state === 'awaiting_approval');
+    const failed = snapshot.tickets.filter(t => ['invalidated','ended'].includes(t.phase || t.state) && t.lastSummary);
+    const errors = snapshot.watchdogFlags.filter(f => f.severity === 'error');
+    const questions = snapshot.receipts.filter(r => r.purpose === 'attention' && r.status === 'pending');
+    const items = [];
+    for (const t of approvals) items.push(`<div class="item amber"><div class="title">Approval needed · ${esc(t.packName)}</div><div class="meta">${esc(t.question || 'High-impact action requires a narrow human Mandate.')}</div><div class="row tight" style="margin-top:6px"><button class="primary" data-approve="${esc(t.id)}">Approve</button><button class="danger" data-stop="${esc(t.id)}">Stop</button></div></div>`);
+    for (const q of questions) items.push(`<div class="item amber"><div class="title">Question waiting · ${esc(q.threadKey)}</div><div class="meta">${esc(q.text)}</div></div>`);
+    for (const f of errors) items.push(`<div class="item red"><div class="title">Watchdog escalation · ${esc(f.kind)}</div><div class="meta">${esc(f.message)} ${esc(f.recommendation || '')}</div></div>`);
+    for (const t of failed.slice(0,4)) items.push(`<div class="item grey"><div class="title">Ticket ${esc(t.phase || t.state)} · ${esc(short(t.id))}</div><div class="meta">${esc(t.lastSummary || '')}</div></div>`);
+    $('needsMe').innerHTML = items.length ? items.join('') : '<div class="collapse-note">✓ Nothing needs a person right now. Healthy state takes one line.</div>';
+    $('needsMe').querySelectorAll('[data-approve]').forEach(b => b.onclick = () => control('approve', { ticketId: b.dataset.approve }));
+    $('needsMe').querySelectorAll('[data-stop]').forEach(b => b.onclick = () => control('stopTicket', { ticketId: b.dataset.stop }));
+  }
+
+  function renderEventTabs() {
+    $('eventTabs').innerHTML = FILTERS.map(([id,label]) => `<button role="tab" aria-selected="${eventFilter===id}" class="${eventFilter===id?'active':''}" data-f="${id}">${label}</button>`).join('');
+    $('eventTabs').querySelectorAll('button').forEach(b => b.onclick = () => { eventFilter = b.dataset.f; renderEventTabs(); renderEvents(); });
+  }
+  function renderEvents() {
+    if (!snapshot) return;
+    const list = events.filter(e => matchesFilter(e) && matchesDomain(e)).slice(-160).reverse();
+    $('eventCount').textContent = `${events.length} events`;
+    $('events').innerHTML = list.length ? list.map(e => {
+      const why = [e.actor, e.payload && e.payload.basis, (e.payload && e.payload.reasonCodes || []).join(', '), (e.payload && e.payload.matchedRules || []).join(', ')]
+        .filter(Boolean).join(' · ');
+      return `<div class="event"><span class="seq">#${e.seq}</span><span class="tk">t${e.tick}</span><div class="body"><div class="label"><span class="dot ${colorOf(e)}"></span> ${esc(friendly(e))}</div><div class="why">${esc(why || (e.payload && e.payload.text) || '')}</div></div></div>`;
+    }).join('') : '<div class="hint">No events match this filter yet.</div>';
+  }
+
+  function renderQuiet() {
+    if (!snapshot) return;
+    const led = snapshot.speculation || [];
+    const rows = led.slice(-14).map(s => `<div class="item ${s.promoted?'green':(s.state==='discarded'?'grey':'purple')}"><div class="title">${s.promoted?'Promoted — deliverable proof':(s.state==='discarded'?'Silently discarded — nobody interrupted':'Speculative work running')} · ${esc(s.domain)}</div><div class="meta">${esc(short(s.ticketId))} · confidence ${esc(s.confidence ?? '—')} ${s.wasteTicks?`· ${s.wasteTicks} compute ticks spent`:''}</div></div>`);
+    $('quietWork').innerHTML = `<div class="quiet">Silence savings: <b>${num(snapshot.metrics.silenceSavings)}</b> · speculative waste: <b>${num(snapshot.metrics.speculativeWasteTicks)}</b> ticks · promoted: <b>${num(snapshot.metrics.speculativePromoted)}</b> · discarded: <b>${num(snapshot.metrics.speculativeDiscarded)}</b></div><div class="list" style="margin-top:7px">${rows.join('') || '<div class="hint">Quiet work appears here as it happens.</div>'}</div>`;
+  }
+
+  function renderChecklists() {
+    if (!checklists) { $('checklists').innerHTML = '<div class="hint">Loading checklists…</div>'; return; }
+    $('checklists').innerHTML = checklists.map(c => `<div class="item grey"><div class="title">${esc(c.file)}</div><div class="meta">${c.done} / ${c.total} checked · ${Math.round(100*c.done/Math.max(1,c.total))}%</div><div class="meter" style="width:100%;margin-top:4px"><i style="width:${Math.round(100*c.done/Math.max(1,c.total))}%"></i></div></div>`).join('');
+  }
+
+  function renderBoard() {
+    if (!snapshot) return;
+    const tickets = snapshot.tickets.filter(t => selectedDomain === 'all' || t.domain === selectedDomain);
+    const groups = [
+      ['running','Working','blue'],['queued','Queued','blue'],['awaiting_approval','Needs a person','amber'],
+      ['delivering','Delivering','green'],['done','Done','green'],['discarded','Quietly discarded','grey'],
+      ['invalidated','Invalidated','red'],['ended','Ended','grey']
+    ];
+    let html = '';
+    for (const [state,label,color] of groups) {
+      const ts = tickets.filter(t => t.phase || t.state === state).slice(-8).reverse();
+      if (!ts.length) continue;
+      html += `<div class="board-group"><h4>${label} (${ts.length})</h4>` + ts.map(t => `<div class="ticket ${selectedTicket===t.id?'selected':''}" data-ticket="${esc(t.id)}" tabindex="0" role="button" aria-label="Ticket ${esc(short(t.id))}">
+        <div class="name"><span class="dot ${color}"></span> ${esc(t.packName)}</div>
+        <div class="id">${esc(short(t.id))} · ${esc(t.stage)} ${t.speculative?'· speculative':''} ${t.promoted?'· promoted':''}</div>
+        <div class="meta">${esc(t.phase || t.state)} · confidence ${esc(t.confidence ?? '—')} · ${esc(t.riskClass || 'read-only')} · ${t.artifacts.length} artifacts</div></div>`).join('') + '</div>';
+    }
+    $('board').innerHTML = html || '<div class="hint">No Tickets yet for this mission.</div>';
+    $('board').querySelectorAll('[data-ticket]').forEach(el => {
+      const open = () => { selectedTicket = el.dataset.ticket; renderBoard(); renderTicketDetail(); renderArtifactButtons(); };
+      el.onclick = open; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
+    });
+  }
+
+  function renderTicketDetail() {
+    if (!snapshot || !selectedTicket) { $('ticketDetail').innerHTML = ''; return; }
+    const t = snapshot.tickets.find(x => x.id === selectedTicket);
+    if (!t) return;
+    const m = t.mandate || {};
+    $('ticketDetail').innerHTML = `<h3>Selected work · ${esc(short(t.id))}</h3>
+      <div class="item ${t.phase || t.state==='done'?'green':(t.phase || t.state==='awaiting_approval'?'amber':'blue')}">
+        <div class="title">${esc(t.lastSummary || 'No result yet')}</div>
+        <div class="meta">Thread ${esc((t.threadKeys||[]).join(', ') || '—')} · Mandate ${esc(short(t.mandateId))} · policy ${esc(m.policyVersion || '—')} · via ${esc(m.via || '—')} · rules ${esc((m.ruleIds||[]).join(', ') || '—')}</div>
+        <div class="meta">Stage ${esc(t.stage)} · risk ${esc(t.riskClass||'—')} · confidence ${esc(t.confidence ?? '—')} · approvals ${t.approvals.length} · created t${t.createdTick} ${t.completionTick!==null?`· completed t${t.completionTick}`:''}</div>
+        <div class="row tight" style="margin-top:6px"><button class="ghost" data-recall="${esc(t.id)}">Recall from Ticket</button><button class="ghost" data-artifact="${esc(t.id)}">List artifacts</button></div>
+      </div>`;
+    const b = $('ticketDetail').querySelector('[data-recall]'); if (b) b.onclick = () => openRecall(t.id);
+    const a = $('ticketDetail').querySelector('[data-artifact]'); if (a) a.onclick = () => renderArtifactButtons();
+  }
+
+  function renderArtifactButtons() {
+    if (!snapshot || !selectedTicket) { $('artifactButtons').innerHTML = '<span class="hint">No Ticket selected.</span>'; return; }
+    const t = snapshot.tickets.find(x => x.id === selectedTicket);
+    if (!t || !t.artifacts || !t.artifacts.length) { $('artifactButtons').innerHTML = '<span class="hint">No artifacts written yet.</span>'; return; }
+    $('artifactButtons').innerHTML = t.artifacts.map(f => `<button class="ghost" data-file="${esc(f)}">${esc(f)}</button>`).join('');
+    $('artifactButtons').querySelectorAll('[data-file]').forEach(b => b.onclick = async () => {
+      try {
+        const text = await fetch(`/api/artifact?ticket=${encodeURIComponent(t.id)}&file=${encodeURIComponent(b.dataset.file)}`).then(r => r.text());
+        $('artifactContent').textContent = text;
+      } catch (e) { $('artifactContent').textContent = 'Could not load artifact: ' + e.message; }
+    });
+  }
+
+  function renderWorkers() {
+    if (!snapshot) return;
+    const max = snapshot.config.maxWorkers || 4;
+    const workers = snapshot.effects.filter(e => e.kind === 'worker' && (e.state === 'due' || e.state === 'running')).slice(-max);
+    $('workerCount').textContent = `${workers.length} / ${max}`;
+    let html = '';
+    for (let i = 0; i < max; i++) {
+      const e = workers[i];
+      if (!e) html += `<div class="slot"><span class="chip grey">slot ${i+1} idle</span><div class="bar"><i style="width:0%"></i></div><span class="hint">free</span></div>`;
+      else {
+        const effort = e.payload.effort || 1;
+        const start = (e.payload.readyTick || snapshot.tick) - effort;
+        const pct = Math.max(0, Math.min(100, Math.round(100 * (snapshot.tick - start) / effort)));
+        html += `<div class="slot"><span class="chip blue">slot ${i+1}</span><div class="bar"><i style="width:${pct}%"></i></div><span class="hint">${esc(e.payload.stage)} · ${pct}%</span></div>`;
+      }
+    }
+    $('workers').innerHTML = html;
+  }
+
+  function renderOutbox() {
+    if (!snapshot) return;
+    const rs = snapshot.receipts.slice(-14).reverse();
+    $('outbox').innerHTML = rs.length ? rs.map(r => `<div class="item ${r.status==='sent'?'green':(r.status==='dropped'?'red':'amber')}"><div class="title">${esc(r.purpose)} · ${r.words} words · ${esc(r.status)}</div><div class="meta">${esc(r.text)}${r.dropReason?` · dropped: ${esc(r.dropReason)}`:''}</div></div>`).join('') : '<div class="hint">No outbound messages. Silence is the default.</div>';
+  }
+
+  function renderRecall(graph) {
+    const svg = $('recallSvg');
+    if (!graph || !graph.nodes || !graph.nodes.length) { svg.innerHTML = '<text x="20" y="30" fill="#9aa8c7" font-size="12">No card selected. Use “From first Trigger”.</text>'; return; }
+    const byDepth = {};
+    for (const n of graph.nodes) (byDepth[n.depth] ||= []).push(n);
+    const pos = new Map();
+    let maxY = 40;
+    for (const [d, nodes] of Object.entries(byDepth)) {
+      nodes.forEach((n, i) => { const x = 45 + Number(d) * 150, y = 32 + i * 48; pos.set(n.id, {x,y}); maxY = Math.max(maxY, y + 20); });
+    }
+    const maxDepth = Math.max(0, ...Object.keys(byDepth).map(Number));
+    const W = Math.max(660, 45 + maxDepth * 150 + 220), H = Math.max(250, maxY + 20);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const edges = graph.edges.filter(e => pos.has(e.from) && pos.has(e.to)).map(e => {
+      const a = pos.get(e.from), b = pos.get(e.to);
+      return `<line x1="${a.x+12}" y1="${a.y+12}" x2="${b.x+12}" y2="${b.y+12}" stroke="#3b4c73" stroke-width="1.2"/>`;
+    }).join('');
+    const nodes = graph.nodes.filter(n => pos.has(n.id)).map(n => {
+      const p = pos.get(n.id);
+      const label = (n.title || n.kind || n.id).slice(0, 22);
+      return `<g class="recall-node" data-id="${esc(n.id)}" tabindex="0" role="button" aria-label="Expand ${esc(label)}">
+        <circle cx="${p.x+12}" cy="${p.y+12}" r="12"></circle>
+        <text x="${p.x+30}" y="${p.y+9}">${esc(n.kind)}</text>
+        <text x="${p.x+30}" y="${p.y+22}" fill="#9aa8c7">${esc(label)}</text></g>`;
+    }).join('');
+    svg.innerHTML = edges + nodes;
+    svg.querySelectorAll('.recall-node').forEach(g => {
+      const go = () => openRecall(g.dataset.id);
+      g.onclick = go; g.onkeydown = e => { if (e.key === 'Enter') go(); };
+    });
+    $('recallRoot').textContent = `root ${short(graph.root && graph.root.id)} · ${graph.nodes.length} cards`;
+  }
+  async function openRecall(id) {
+    if (!id) return;
+    recallRoot = id;
+    try { renderRecall(await api(`/api/recall?id=${encodeURIComponent(id)}&hops=4`)); } catch (e) { toast('Recall failed: ' + e.message); }
+  }
+
+  function renderBenchmark() {
+    const el = $('benchmark');
+    if (!benchmark) { el.innerHTML = '<div class="hint">Benchmark not run yet. Press “Run benchmark” to compare the two architectures on the identical synthetic event stream.</div>'; return; }
+    const a = benchmark.argos, b = benchmark.baseline;
+    const vals = [a.p50Completion, b.p50Completion, a.p95Completion, b.p95Completion];
+    const max = Math.max(1, ...vals);
+    const bar = (label, v, base) => `<div class="barrow ${base?'baseline':''}"><span>${esc(label)}</span><div class="track"><i style="width:${Math.round(100*v/max)}%"></i></div><b>${num(v)}</b></div>`;
+    const asserts = Object.entries(benchmark.assertions).map(([k,v]) => `<span class="chip ${v?'green':'red'}">${v?'PASS':'FAIL'} ${esc(k)}</span>`).join('');
+    el.innerHTML = `<div class="grid2">
+      ${metricCard('ARGOS p50 / p95', `${num(a.p50Completion)} / ${num(a.p95Completion)}`, 'Percentiles from ≥20 completed tasks.')}
+      ${metricCard('Baseline p50 / p95', `${num(b.p50Completion)} / ${num(b.p95Completion)}`, 'Serial single-session baseline with noise interruption penalty.')}
+      ${metricCard('Attention cost', `${num(a.attentionCost)} vs ${num(b.attentionCost)}`, 'messages + words/100; lower is better.')}
+      ${metricCard('Cache-read tokens', `${num(a.cacheReadTokensEst)} vs ${num(b.cacheReadTokensEst)}`, 'Honest trade-off: proactive parallelism reads more cached context.')}
+    </div>
+    <h3>Completion ticks (lower is better)</h3>
+    ${bar('ARGOS p50', a.p50Completion, false)}${bar('Baseline p50', b.p50Completion, true)}
+    ${bar('ARGOS p95', a.p95Completion, false)}${bar('Baseline p95', b.p95Completion, true)}
+    <div class="assert">${asserts}</div>
+    <div class="footnote">${esc(benchmark.caveat)} Workload: ${benchmark.workload.triggers} triggers, ${benchmark.workload.tasks} tasks, ${benchmark.workload.noise} noise signals.</div>`;
+  }
+
+  function render() {
+    if (!snapshot) return;
+    renderHeader(); renderMetrics(); renderNeedsMe(); renderEvents(); renderQuiet(); renderBoard();
+    renderTicketDetail(); renderArtifactButtons(); renderWorkers(); renderOutbox(); renderBenchmark();
+  }
+
+  async function poll() {
+    try {
+      const [snap, ev] = await Promise.all([api('/api/snapshot'), api(`/api/events?since=${lastSeq}`)]);
+      snapshot = snap;
+      if (ev.events && ev.events.length) { events.push(...ev.events); events = events.slice(-800); lastSeq = ev.seq; }
+      render();
+    } catch (e) { /* preview may be opened as a file; degrade quietly */ }
+  }
+
+  function initOptions() {
+    const packs = (snapshot && snapshot.packs) || [];
+    if (!allMissions.length) allMissions = packs.slice();
+    $('mission').innerHTML = '<option value="all">All four missions</option>' + packs.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+    $('injDomain').innerHTML = packs.map(p => `<option value="${esc(p.id)}">${esc(p.short)}</option>`).join('');
+  }
+
+  async function boot() {
+    renderEventTabs();
+    await poll(); initOptions(); render();
+    try { checklists = (await api('/api/checklists')).checklists; renderChecklists(); } catch (_) {}
+    try { benchmark = await api('/api/benchmark'); renderBenchmark(); } catch (_) { benchmark = null; renderBenchmark(); }
+    setInterval(poll, 700);
+  }
+
+  $('mission').onchange = async e => {
+    selectedDomain = e.target.value;
+    events = []; lastSeq = 0; selectedTicket = null;
+    const out = await control('switchDomain', { domain: selectedDomain });
+    if (out && out.result && out.result.ok) toast(`Loaded ${selectedDomain === 'all' ? 'all four missions' : selectedDomain} from a fresh Engine state.`);
+    render();
+  };
+  $('speed').onchange = e => { speed = Number(e.target.value); control('speed', { speed }); };
+  $('pauseBtn').onclick = () => control(snapshot && snapshot.paused ? 'resume' : 'pause');
+  $('resetBtn').onclick = () => { events = []; lastSeq = 0; selectedTicket = null; benchmark = benchmark; control('reset'); };
+  $('replayBtn').onclick = async () => { const r = await control('replay'); if (r && r.result) toast(`Replay identical: ${r.result.identical} · ${r.result.events} events`); };
+  $('runEndBtn').onclick = () => control('runEnd');
+  $('benchBtn').onclick = async () => { toast('Running 300-tick benchmark…'); await control('benchmark'); toast('Benchmark complete.'); };
+  $('modeSel').onchange = e => control('setMode', { mode: e.target.value });
+  $('specBtn').onclick = () => control('speculation', {});
+  $('policyBtn').onclick = () => control('setPolicy', { payload: { revision: 'v3' } });
+  $('stallBtn').onclick = () => control('injectStall');
+  $('injectBtn').onclick = async () => {
+    let meta = {};
+    try { meta = JSON.parse($('injMeta').value || '{}'); } catch (e) { toast('Meta JSON invalid: ' + e.message); return; }
+    if ($('injSpec').checked) meta.speculative = true;
+    try {
+      const out = await api('/api/inject', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({
+        domain: $('injDomain').value, text: $('injText').value, meta,
+        effort: Number($('injEffort').value), addressed: $('injMention').checked ? 'mention' : null,
+        tags: $('injSpec').checked ? ['speculative'] : ['manual']
+      })});
+      snapshot = out.snapshot; render(); toast(out.rejected ? 'Injected event rejected by the gate.' : 'Injected event admitted at tick ' + snapshot.tick);
+    } catch (e) { toast('Inject failed: ' + e.message); }
+  };
+  $('recallTrigger').onclick = () => {
+    const e = events.find(x => x.type === 'trigger.received');
+    if (e) openRecall((e.refs || [])[0] || e.payload.triggerId);
+  };
+  $('recallTicket').onclick = () => openRecall(selectedTicket);
+
+  boot();
+})();
+</script>
+</body>
+</html>

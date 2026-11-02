@@ -1,0 +1,376 @@
+{
+  "name": "ARGOS-4 constitution",
+  "mode": "observe",
+  "rules": [
+    {
+      "id": "R-LAB-1",
+      "name": "Reproduce a falsifiable claim",
+      "signals": [
+        "replicate",
+        "claim",
+        "not reproducible"
+      ],
+      "instruction": "Recompute a pinned claim against its dataset; deliver only evidence-backed results.",
+      "requiresMeta": [
+        "claimId"
+      ],
+      "domain": "science-replication-lab"
+    },
+    {
+      "id": "R-LAB-2",
+      "name": "Verify seed stability",
+      "signals": [
+        "seed",
+        "sensitivity",
+        "stable"
+      ],
+      "instruction": "Re-run across at least 12 seeds before concluding stability.",
+      "requiresMeta": [
+        "claimId"
+      ],
+      "domain": "science-replication-lab"
+    },
+    {
+      "id": "R-LAB-3",
+      "name": "Silently falsify chat claims",
+      "signals": [
+        "looks better",
+        "probably fine"
+      ],
+      "instruction": "Speculative, silent; deliver only on falsification or a material effect delta.",
+      "requiresMeta": [
+        "claimId"
+      ],
+      "silent": true,
+      "domain": "science-replication-lab"
+    },
+    {
+      "id": "R-INF-1",
+      "name": "Assess cascade risk after a threshold breach",
+      "signals": [
+        "assess",
+        "cascade",
+        "over temperature",
+        "climbing"
+      ],
+      "instruction": "Simulate cascading failure on the pinned topology; never actuate.",
+      "requiresMeta": [
+        "asset"
+      ],
+      "domain": "self-healing-infrastructure"
+    },
+    {
+      "id": "R-INF-2",
+      "name": "Compare mitigations on a what-if signal",
+      "signals": [
+        "what if",
+        "voltage dip",
+        "reroute"
+      ],
+      "instruction": "Compare mitigations in isolated workers; simulation only.",
+      "requiresMeta": [
+        "sector"
+      ],
+      "domain": "self-healing-infrastructure"
+    },
+    {
+      "id": "R-INF-3",
+      "name": "Simulate before any actuation",
+      "signals": [
+        "shed",
+        "failover",
+        "reconfigure"
+      ],
+      "instruction": "High-impact actions require a new approval mandate.",
+      "requiresMeta": [
+        "asset"
+      ],
+      "domain": "self-healing-infrastructure"
+    },
+    {
+      "id": "R-SC-1",
+      "name": "Verify exploitability on advisory",
+      "signals": [
+        "verify",
+        "advisory",
+        "CVE",
+        "GHSA",
+        "VEX"
+      ],
+      "instruction": "Resolve activation path and run a deterministic exploitability test.",
+      "requiresMeta": [
+        "advisoryId"
+      ],
+      "domain": "supply-chain-immune-system"
+    },
+    {
+      "id": "R-SC-2",
+      "name": "Produce VEX + patch when activation confirmed",
+      "signals": [
+        "patch",
+        "affected",
+        "VEX"
+      ],
+      "instruction": "Draft patch and VEX statement; production patching needs approval.",
+      "requiresMeta": [
+        "advisoryId"
+      ],
+      "domain": "supply-chain-immune-system"
+    },
+    {
+      "id": "R-SC-3",
+      "name": "Silently reproduce advisories",
+      "signals": [
+        "might be affected",
+        "new advisory"
+      ],
+      "instruction": "Speculative, silent; deliver only on actionable proof.",
+      "requiresMeta": [
+        "advisoryId"
+      ],
+      "silent": true,
+      "domain": "supply-chain-immune-system"
+    },
+    {
+      "id": "R-CMP-1",
+      "name": "Map a regulatory change to controls",
+      "signals": [
+        "map",
+        "change",
+        "obligation",
+        "Article",
+        "A72"
+      ],
+      "instruction": "Cross-map obligations to controls; no legal interpretation.",
+      "requiresMeta": [
+        "obligationId"
+      ],
+      "domain": "living-compliance"
+    },
+    {
+      "id": "R-CMP-2",
+      "name": "Continuously test controls and flag drift",
+      "signals": [
+        "drift",
+        "retention",
+        "logging"
+      ],
+      "instruction": "Run deterministic control tests against evidence fixtures.",
+      "requiresMeta": [
+        "control"
+      ],
+      "domain": "living-compliance"
+    },
+    {
+      "id": "R-CMP-3",
+      "name": "Prepare gap analysis speculatively",
+      "signals": [
+        "guidance",
+        "coming",
+        "draft"
+      ],
+      "instruction": "Speculative, silent; never sign without a human.",
+      "requiresMeta": [
+        "hint"
+      ],
+      "silent": true,
+      "domain": "living-compliance"
+    }
+  ],
+  "sources": {
+    "lab-chat": {
+      "allowed": [
+        "dr.chen",
+        "mira"
+      ],
+      "bots": [],
+      "observed": [
+        "lab-chat"
+      ],
+      "observedScopes": [
+        "lab-chat"
+      ]
+    },
+    "literature-feed": {
+      "allowed": [],
+      "bots": [
+        "literature-feed"
+      ],
+      "observed": [
+        "literature-feed"
+      ],
+      "observedScopes": [
+        "literature-feed"
+      ]
+    },
+    "dataset-ci": {
+      "allowed": [],
+      "bots": [
+        "dataset-ci"
+      ],
+      "observed": [
+        "dataset-ci"
+      ],
+      "observedScopes": [
+        "dataset-ci"
+      ]
+    },
+    "grid-telemetry": {
+      "allowed": [],
+      "bots": [],
+      "observed": [
+        "grid-telemetry"
+      ],
+      "observedScopes": [
+        "grid-telemetry"
+      ]
+    },
+    "ops-chat": {
+      "allowed": [
+        "oncall.ada",
+        "ops.joris"
+      ],
+      "bots": [
+        "alert-bot"
+      ],
+      "observed": [
+        "ops-chat"
+      ],
+      "observedScopes": [
+        "ops-chat"
+      ]
+    },
+    "deploy-ci": {
+      "allowed": [],
+      "bots": [
+        "deploy-ci"
+      ],
+      "observed": [
+        "deploy-ci"
+      ],
+      "observedScopes": [
+        "deploy-ci"
+      ]
+    },
+    "advisory-feed": {
+      "allowed": [],
+      "bots": [
+        "osv-bot"
+      ],
+      "observed": [
+        "advisory-feed"
+      ],
+      "observedScopes": [
+        "advisory-feed"
+      ]
+    },
+    "sbom-ci": {
+      "allowed": [],
+      "bots": [
+        "sbom-ci"
+      ],
+      "observed": [
+        "sbom-ci"
+      ],
+      "observedScopes": [
+        "sbom-ci"
+      ]
+    },
+    "sec-chat": {
+      "allowed": [
+        "sec.ada",
+        "dev.mira"
+      ],
+      "bots": [
+        "dependabot[bot]"
+      ],
+      "observed": [
+        "sec-chat"
+      ],
+      "observedScopes": [
+        "sec-chat"
+      ]
+    },
+    "reg-feed": {
+      "allowed": [],
+      "bots": [
+        "eu-monitor"
+      ],
+      "observed": [
+        "reg-feed"
+      ],
+      "observedScopes": [
+        "reg-feed"
+      ]
+    },
+    "control-telemetry": {
+      "allowed": [],
+      "bots": [],
+      "observed": [
+        "control-telemetry"
+      ],
+      "observedScopes": [
+        "control-telemetry"
+      ]
+    },
+    "audit-chat": {
+      "allowed": [
+        "grc.ada",
+        "auditor.joris"
+      ],
+      "bots": [],
+      "observed": [
+        "audit-chat"
+      ],
+      "observedScopes": [
+        "audit-chat"
+      ]
+    }
+  },
+  "speculation": {
+    "enabled": true,
+    "confidenceThreshold": 0.72,
+    "maxPerTick": 2,
+    "showcaseSpeculationInObserve": true
+  },
+  "autonomy": {
+    "auto": [
+      "read-only",
+      "simulate",
+      "compute",
+      "draft",
+      "attest-provisional"
+    ],
+    "approve": [
+      "high-impact",
+      "actuate",
+      "patch-prod",
+      "sign-attestation",
+      "publish-advisory"
+    ],
+    "forbid": [
+      "forbidden",
+      "delete-data",
+      "rotate-secrets",
+      "regional-failover",
+      "external-write",
+      "publish-external"
+    ]
+  },
+  "attention": {
+    "chatWordLimit": 100,
+    "oneAckPerTicket": true,
+    "maxMessagesPerTick": 3
+  },
+  "workers": {
+    "maxWorkers": 4,
+    "timeoutTicks": 40
+  },
+  "watchdog": {
+    "stallTicks": 6,
+    "loopThreshold": 3
+  },
+  "evalLatencyTicks": 1,
+  "reviewTicks": 3,
+  "disclosure": "ARGOS automated agent \u2014 not a human."
+}

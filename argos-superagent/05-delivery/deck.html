@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARGOS-4 — Superagent Observatory · deck</title>
+<style>
+  :root{--bg:#0b1020;--panel:#131a30;--line:#263353;--text:#eaf0ff;--muted:#9aa8c7;--blue:#4aa8ff;--green:#28d19b;--amber:#ffb84d;--purple:#9b8cff;--red:#ff6b6b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  .deck{position:relative;width:100vw;height:100vh}
+  .slide{position:absolute;inset:0;display:none;padding:5vh 7vw;overflow:auto}
+  .slide.active{display:block}
+  h1{font-size:clamp(36px,6vw,76px);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em}
+  h2{font-size:clamp(24px,3.6vw,44px);margin:0 0 20px;letter-spacing:-.01em}
+  h3{font-size:18px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:0 0 10px}
+  p{max-width:900px;font-size:clamp(16px,1.7vw,22px);color:#dbe4ff}
+  .muted{color:var(--muted)}
+  .badge{display:inline-block;padding:3px 10px;border:1px solid var(--line);border-radius:99px;background:#1b2542;font-size:13px;margin:2px 4px 2px 0}
+  .badge.amber{color:var(--amber);border-color:#6b4d1c}.badge.green{color:var(--green);border-color:#1c5b47}.badge.blue{color:var(--blue);border-color:#254d78}.badge.purple{color:var(--purple);border-color:#4b3f7a}
+  .grid{display:grid;gap:16px;margin-top:18px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card b{display:block;font-size:20px;margin-bottom:6px}.card span{color:var(--muted);font-size:14px}
+  .big{font-size:clamp(28px,4vw,58px);font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums}
+  .big.green{color:var(--green)}.big.amber{color:var(--amber)}.big.purple{color:var(--purple)}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:15px}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+  code{background:#080d1a;border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:.9em;color:#cfe0ff}
+  ul{max-width:950px;font-size:clamp(15px,1.5vw,20px);padding-left:1.2em}li{margin:7px 0}
+  svg{width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  .nav{position:fixed;bottom:18px;right:22px;display:flex;gap:8px;align-items:center;z-index:10}
+  button{background:#1c3a63;border:1px solid var(--blue);color:var(--text);border-radius:9px;padding:8px 14px;font:inherit;cursor:pointer}
+  button:hover{background:#27558f}button:focus-visible{outline:2px solid #ffd166;outline-offset:2px}
+  .count{color:var(--muted);font-size:13px;min-width:64px;text-align:center}
+  .foot{position:fixed;bottom:18px;left:22px;color:var(--muted);font-size:12px;z-index:10}
+  .dots{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10}
+  .dot{width:8px;height:8px;border-radius:50%;background:#33405f;cursor:pointer}.dot.on{background:var(--blue)}
+  .quote{border-left:4px solid var(--purple);padding-left:18px;font-style:italic;color:#dbe4ff;font-size:clamp(18px,2.2vw,28px);max-width:900px}
+  .pill{display:inline-flex;gap:6px;align-items:center;background:#1b2542;border:1px solid var(--line);border-radius:99px;padding:4px 10px;font-size:12px;color:var(--muted)}
+  @media(max-width:900px){.g4,.g3,.g2{grid-template-columns:1fr}.slide{padding:4vh 5vw}}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<section class="slide active" aria-label="Slide 1">
+  <h3>ARGOS-4 · live showcase · 2026-11-02</h3>
+  <h1>One Engine.<br>Four missions.<br>Zero credentials.</h1>
+  <p class="quote">“Take as little human attention as possible, and give as much value as possible.”</p>
+  <p><span class="badge amber">SYNTHETIC DEMO DATA</span><span class="badge purple">deterministic constitution</span><span class="badge green">zero network calls</span><span class="badge blue">Node 20 · no npm install</span></p>
+  <div class="grid g4" style="margin-top:28px">
+    <div class="card"><b class="big">33/33</b><span>tests pass</span></div>
+    <div class="card"><b class="big green">10/10</b><span>benchmark assertions</span></div>
+    <div class="card"><b class="big amber">15/15</b><span>demo assertions</span></div>
+    <div class="card"><b class="big purple">180/180</b><span>checklist boxes</span></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Slide 2">
+  <h3>The problem</h3>
+  <h2>Upstream: one proactive GitHub coding agent</h2>
+  <p>DeepSeek's <code>dsh-superagent-prototype</code> implements a Router/Worker architecture, immutable Mandates, <code>observe</code>/<code>auto</code>, durable Effects, an Outbox and a human-attention panel. It is a research prototype, not a product.</p>
+  <p>The design essay goes further: event-driven operation, many-to-many Thread subscriptions, speculative silent execution, Inline &amp; Spill, Chain of Recall, an external semantic Watchdog, channel-specific output budgets, and the attention bottleneck.</p>
+  <div class="grid g3">
+    <div class="card"><b>Prototype gap</b><span>No real sandbox, no external Watchdog, no measured speculation, no native attention metrics.</span></div>
+    <div class="card"><b>ARGOS-4 answer</b><span>Sandbox-by-construction pure workers, external Watchdog, speculation ledger, attention meter, replay.</span></div>
+    <div class="card"><b>Scope decision</b><span>Not a DSH fork. A self-contained showcase that runs here without DSH, GitHub account, Feishu or model key.</span></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Slide 3">
+  <h3>Architecture</h3>
+  <h2>Domain-agnostic coordination, pluggable Sources</h2>
+  <svg viewBox="0 0 900 330" role="img" aria-label="ARGOS-4 architecture diagram">
+    <style>text{font:13px system-ui,sans-serif;fill:#eaf0ff}.m{fill:#9aa8c7}.box{fill:#131a30;stroke:#263353;rx:10}.a{fill:#1c3a63;stroke:#4aa8ff}.g{fill:#143a30;stroke:#28d19b}.p{fill:#2a2350;stroke:#9b8cff}.am{fill:#4a3212;stroke:#ffb84d}</style>
+    <rect x="20" y="30" width="170" height="60" rx="10" class="box a"/><text x="38" y="55">Sources / Triggers</text><text x="38" y="75" class="m">4 packs · 12 sources</text>
+    <rect x="220" y="30" width="170" height="60" rx="10" class="box a"/><text x="238" y="55">Code Gate</text><text x="238" y="75" class="m">text is data</text>
+    <rect x="420" y="30" width="170" height="60" rx="10" class="box p"/><text x="438" y="55">Router / Eval</text><text x="438" y="75" class="m">batched · constitution</text>
+    <rect x="620" y="30" width="170" height="60" rx="10" class="box am"/><text x="638" y="55">Mandate / Ticket</text><text x="638" y="75" class="m">immutable · versioned</text>
+    <line x1="190" y1="60" x2="220" y2="60" stroke="#4aa8ff"/><line x1="390" y1="60" x2="420" y2="60" stroke="#4aa8ff"/><line x1="590" y1="60" x2="620" y2="60" stroke="#9b8cff"/>
+    <rect x="620" y="130" width="170" height="60" rx="10" class="box g"/><text x="638" y="155">Workers</text><text x="638" y="175" class="m">4 slots · pure functions</text>
+    <rect x="420" y="230" width="170" height="60" rx="10" class="box g"/><text x="438" y="255">Evidence artifacts</text><text x="438" y="275" class="m">evidence.json + report</text>
+    <rect x="220" y="230" width="170" height="60" rx="10" class="box a"/><text x="238" y="255">Outbox / Channel</text><text x="238" y="275" class="m">router-only · ≤100 words</text>
+    <rect x="20" y="230" width="170" height="60" rx="10" class="box p"/><text x="38" y="255">Dashboard + Recall</text><text x="38" y="275" class="m">3 questions · SVG graph</text>
+    <rect x="220" y="130" width="170" height="60" rx="10" class="box am"/><text x="238" y="155">Watchdog / Metrics</text><text x="238" y="175" class="m">external · read-only</text>
+    <line x1="705" y1="90" x2="705" y2="130" stroke="#ffb84d"/><line x1="620" y1="160" x2="590" y2="260" stroke="#28d19b"/><line x1="420" y1="260" x2="390" y2="260" stroke="#28d19b"/><line x1="220" y1="260" x2="190" y2="260" stroke="#4aa8ff"/><line x1="305" y1="190" x2="305" y2="230" stroke="#ffb84d" stroke-dasharray="4"/>
+    <line x1="305" y1="160" x2="420" y2="60" stroke="#ffb84d" stroke-dasharray="4"/><text x="330" y="125" class="m">observes</text>
+  </svg>
+  <p class="muted">The Engine has no domain vocabulary. Adding a fifth pack changes only the registry, policy and evidence schema.</p>
+</section>
+
+<section class="slide" aria-label="Slide 4">
+  <h3>Four missions</h3>
+  <h2>Same coordination contract, different evidence</h2>
+  <div class="grid g2">
+    <div class="card"><b>🔬 Helios Replication Lab</b><span>Silent reproduction. Bootstrap CI, 12–16 seed runs, replay stability. Speaks only with an executable effect delta.</span></div>
+    <div class="card"><b>⚡ Amsterdam Grid Digital Twin</b><span>Speculative cascade what-ifs on a pinned topology. High-impact mitigation always waits for a human Mandate with rollback.</span></div>
+    <div class="card"><b>🛡️ Immune System</b><span>Execution-bound exploitability, not static SBOM matching. VEX, draft patch and sha256 attestation chain.</span></div>
+    <div class="card"><b>📋 Living Audit</b><span>Continuous control tests, evidence drift, provisional attestation. The human signature is non-delegable.</span></div>
+  </div>
+  <p style="margin-top:22px"><span class="pill">observe default</span><span class="pill">approve high-impact</span><span class="pill">forbid external writes</span><span class="pill">no legal interpretation</span></p>
+</section>
+
+<section class="slide" aria-label="Slide 5">
+  <h3>Authority &amp; attention</h3>
+  <h2>Ten invariants, enforced in code</h2>
+  <div class="grid g2">
+    <div class="card"><b>Router never executes</b><span>Workers are pure functions in <code>experiments.js</code>; the Engine only enqueues durable effects.</span></div>
+    <div class="card"><b>Workers never speak</b><span><code>Outbox.send()</code> asserts <code>actor === 'router'</code>; chat replies ≤100 words.</span></div>
+    <div class="card"><b>Text is data</b><span>Unknown actors and injection fixtures are rejected before a Trigger exists.</span></div>
+    <div class="card"><b>Immutable Mandates</b><span>Bound to a policy hash. A policy change invalidates in-flight work; ended Tickets need a new Mandate.</span></div>
+    <div class="card"><b>Evidence before prose</b><span>Every result has <code>evidence.json</code>, <code>input.json</code>, <code>log.jsonl</code>, <code>report.md</code>, <code>result.json</code>.</span></div>
+    <div class="card"><b>Replay &amp; zero credentials</b><span>Append-only JSONL; two runs produce identical 1011-event demo logs. No keys, no network.</span></div>
+  </div>
+</section>
+
+<section class="slide" aria-label="Slide 6">
+  <h3>Live dashboard</h3>
+  <h2>Three questions, in order</h2>
+  <div class="grid g3">
+    <div class="card"><b class="big amber">1</b><span><b>Does anything need me now?</b><br>Approvals, questions, failed Tickets, Watchdog escalations. Healthy state collapses to one green line.</span></div>
+    <div class="card"><b class="big blue">2</b><span><b>Is it healthy?</b><br>Metrics, policy mode, observe ledger, event stream, Recall graph, benchmark chart, attention spend.</span></div>
+    <div class="card"><b class="big green">3</b><span><b>What is the history?</b><br>Trigger → Decision → Mandate → Ticket → Assignment → Evidence → Reply, expandable hop by hop.</span></div>
+  </div>
+  <p style="margin-top:22px">Single inline HTML, no CDN, no external fonts. <span class="badge amber">SYNTHETIC DEMO DATA</span> <span class="badge purple">deterministic constitution</span> <span class="badge blue">simulation ticks, not wall-clock</span></p>
+  <p class="muted">Controls: mission filter · speed 0.5×–4× · pause/resume · reset · replay · run to end · mode · policy · speculation · inject event · approve/stop · inject stall · benchmark.</p>
+</section>
+
+<section class="slide" aria-label="Slide 7">
+  <h3>Quiet work</h3>
+  <h2>Speculate silently. Promote only on proof.</h2>
+  <table>
+    <tr><th>Signal</th><th>Work started</th><th>Outcome</th><th>Messages</th></tr>
+    <tr><td>“looks 9% better” (claim-77)</td><td>bootstrap + seed sweep</td><td class="muted">discarded — reproduced</td><td>0</td></tr>
+    <tr><td>“voltage dip, probably nothing”</td><td>cascade simulation</td><td class="muted">discarded — contained</td><td>0</td></tr>
+    <tr><td>“new logging guidance coming”</td><td>gap analysis</td><td class="muted">discarded — no affected controls</td><td>0</td></tr>
+    <tr><td>“we might be affected by GHSA-4412”</td><td>reachability + exploit test</td><td class="green">promoted — VEX + patch</td><td>1</td></tr>
+    <tr><td>GHSA-4499 unused dev dependency</td><td>reachability proof</td><td class="green">promoted — not_affected VEX, no human request</td><td>1</td></tr>
+  </table>
+  <p style="margin-top:20px">Demo totals: <b>2 promotions</b>, <b>3 silent discards</b>, <b>20 silence savings</b>, <b>22 speculative waste ticks</b>, <b>12 Watchdog flags</b>, <b>0 policy violations</b>.</p>
+</section>
+
+<section class="slide" aria-label="Slide 8">
+  <h3>Benchmark</h3>
+  <h2>Same 280-trigger stream, two architectures</h2>
+  <table>
+    <tr><th>Metric</th><th>ARGOS-4</th><th>Single-session baseline</th></tr>
+    <tr><td>p50 completion</td><td class="big green">8</td><td>170 ticks</td></tr>
+    <tr><td>p95 completion</td><td class="big green">12</td><td>248.9 ticks</td></tr>
+    <tr><td>Messages sent</td><td class="big green">57</td><td>308</td></tr>
+    <tr><td>Attention cost</td><td class="big green">68.63</td><td>446.6</td></tr>
+    <tr><td>Router decisions avoided</td><td class="big blue">8</td><td>0</td></tr>
+    <tr><td>Cache-read tokens est.</td><td class="big amber">2,150,400</td><td>537,600</td></tr>
+    <tr><td>Speculative waste</td><td class="big amber">18</td><td>0</td></tr>
+    <tr><td>Policy violations</td><td class="big green">0</td><td>0</td></tr>
+  </table>
+  <p style="margin-top:16px"><b>The honest trade-off:</b> lower person-attention, higher cache reads. 10/10 assertions pass; 29 tasks completed; <code>artifactsProduced == tasksCompleted</code>; <code>messages/trigger = 0.204 ≤ 0.25</code>.</p>
+</section>
+
+<section class="slide" aria-label="Slide 9">
+  <h3>Handoff</h3>
+  <h2>What it proves — and what it does not</h2>
+  <div class="grid g2">
+    <div class="card"><b class="green">Proves</b><span>Event-driven coordination, attention bounding, evidence-gated delivery, policy revalidation, speculation economics, deterministic replay, four pluggable domains — end to end, with zero credentials.</span></div>
+    <div class="card"><b class="amber">Does not prove</b><span>Model quality, real datasets/grids/registries/legal interpretation, OS-level seccomp/container isolation, or production security. Synthetic workload; simulated tools; deterministic reasoning. See <a href="production-hardening.md">production-hardening.md</a>.</span></div>
+  </div>
+  <h3 style="margin-top:26px">Responsible next steps</h3>
+  <ul>
+    <li>Harden the Worker boundary: container/VM, egress deny, resource caps.</li>
+    <li>Replace synthetic Sources with authenticated real Sources, one at a time, in <code>observe</code>.</li>
+    <li>Re-run the benchmark on real traces; publish p50/p95, attention and cache-read cost together.</li>
+    <li>Only then consider <code>auto</code> for low-risk matched-rule work. Never auto-merge, self-sign or actuate without a signed human Mandate.</li>
+  </ul>
+  <p style="margin-top:18px"><span class="badge blue">cd 03-app &amp;&amp; npm start</span><span class="badge green">npm test</span><span class="badge purple">npm run demo</span><span class="badge amber">npm run benchmark</span></p>
+  <p class="muted">Read <code>04-evaluation/report.md</code>, <code>05-delivery/handoff.md</code>, <code>CHECKLISTS.md</code>.</p>
+</section>
+
+</div>
+<div class="foot">ARGOS-4 · synthetic demo data · deterministic constitution · use ← → or the buttons</div>
+<div class="dots" id="dots" aria-label="Slide dots"></div>
+<div class="nav">
+  <button id="prev" aria-label="Previous slide">← Prev</button>
+  <span class="count" id="count">1 / 9</span>
+  <button id="next" aria-label="Next slide">Next →</button>
+</div>
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  const count = document.getElementById('count');
+  let i = 0;
+  slides.forEach((_, n) => {
+    const d = document.createElement('span');
+    d.className = 'dot' + (n === 0 ? ' on' : '');
+    d.setAttribute('role', 'button');
+    d.setAttribute('aria-label', 'Go to slide ' + (n + 1));
+    d.onclick = () => go(n);
+    dots.appendChild(d);
+  });
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    location.hash = 'slide-' + (i + 1);
+  }
+  document.getElementById('prev').onclick = () => go(i - 1);
+  document.getElementById('next').onclick = () => go(i + 1);
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+  });
+  const m = location.hash.match(/slide-(\d+)/);
+  if (m) go(Number(m[1]) - 1); else go(0);
+})();
+</script>
+</body>
+</html>

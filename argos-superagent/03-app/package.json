@@ -1,0 +1,15 @@
+{
+  "name": "argos-4-superagent-observatory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zero-credential, end-to-end showcase of the DeepSeek Super-agent coordination contract across four domains",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/web/server.js",
+    "test": "node --test --test-timeout=45000 --test-force-exit tests/*.test.js",
+    "demo": "node src/cli.js --demo",
+    "benchmark": "node src/cli.js --benchmark"
+  },
+  "license": "MIT"
+}
